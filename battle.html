@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusMBTI | The Ultimate Personality Portal</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --analyst: #8b5cf6;
+            --diplomat: #10b981;
+            --sentinel: #3b82f6;
+            --explorer: #f59e0b;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --accent: #4f46e5;
+            --accent-hover: #3730a3;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 1rem;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            background-color: var(--accent);
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* Quiz Styles */
+        .quiz-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            max-width: 700px;
+            margin: 0 auto;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: var(--border);
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .option-btn {
+            background-color: var(--bg-primary);
+            border: 2px solid var(--border);
+            color: var(--text-primary);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .option-btn:hover {
+            border-color: var(--accent);
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+
+        /* Results Screen */
+        .results-container {
+            text-align: center;
+        }
+
+        .result-type {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin: 1rem 0;
+            letter-spacing: 2px;
+        }
+
+        /* Info Grid & Cards */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .analysts { background-color: var(--analyst); }
+        .diplomats { background-color: var(--diplomat); }
+        .sentinels { background-color: var(--sentinel); }
+        .explorers { background-color: var(--explorer); }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+        }
+
+        /* Cognitive Functions Table */
+        .func-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .func-table th, .func-table td {
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+            text-align: left;
+        }
+        .func-table th { background-color: rgba(99, 102, 241, 0.1); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="#" class="logo" onclick="switchTab('home')">NexusMBTI</a>
+            <nav class="nav-links">
+                <a onclick="switchTab('home')">Home</a>
+                <a onclick="switchTab('quiz')">Take Test</a>
+                <a onclick="switchTab('profiles')">16 Types</a>
+                <a onclick="switchTab('theory')">Theory</a>
+                <button class="theme-toggle" onclick="toggleTheme()">🌓 Mode</button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div id="home" class="tab-content active">
+            <div class="hero">
+                <h1>Discover Who You Truly Are</h1>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.2rem;">
+                    Unlock deep insights into your behavior, core motivations, strengths, and relationships with our comprehensive Myers-Briggs personality index.
+                </p>
+                <button class="btn" onclick="switchTab('quiz')">Start the Free Assessment</button>
+            </div>
+
+            <h2 style="margin-top: 3rem;">The 4 Core Core Dichotomies</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Mind: IE</h3>
+                    <p style="color: var(--text-secondary);"><strong>Introversion (I) vs. Extraversion (E)</strong>. How you channel your energy and interact with the world around you.</p>
+                </div>
+                <div class="card">
+                    <h3>Energy: SN</h3>
+                    <p style="color: var(--text-secondary);"><strong>Sensing (S) vs. Intuition (N)</strong>. How you process data, grasp information, and perceive realities.</p>
+                </div>
+                <div class="card">
+                    <h3>Nature: TF</h3>
+                    <p style="color: var(--text-secondary);"><strong>Thinking (T) vs. Feeling (F)</strong>. Your primary method for making decisions and handling emotions.</p>
+                </div>
+                <div class="card">
+                    <h3>Tactics: JP</h3>
+                    <p style="color: var(--text-secondary);"><strong>Judging (J) vs. Perceiving (P)</strong>. Your structural approach to work, planning, and daily life.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="quiz" class="tab-content">
+            <div class="quiz-card" id="quiz-box">
+                <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+                <div id="question-container">
+                    <p id="question-num" style="color: var(--accent); font-weight: bold; margin-bottom: 0.5rem;"></p>
+                    <div class="question-text" id="question-text">Loading question...</div>
+                    <div class="options-container">
+                        <button class="option-btn" onclick="handleAnswer(3)">Strongly Agree</button>
+                        <button class="option-btn" onclick="handleAnswer(1)">Agree</button>
+                        <button class="option-btn" onclick="handleAnswer(-1)">Disagree</button>
+                        <button class="option-btn" onclick="handleAnswer(-3)">Strongly Disagree</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-card results-container" id="results-box" style="display: none;">
+                <h2>Your Personality Profile is Ready!</h2>
+                <div class="result-type" id="type-output">XXXX</div>
+                <h3 id="type-title" style="margin-bottom: 1.5rem;"></h3>
+                <p id="type-summary" style="color: var(--text-secondary); margin-bottom: 2rem;"></p>
+                <button class="btn" onclick="resetQuiz()">Retake Test</button>
+            </div>
+        </div>
+
+        <div id="profiles" class="tab-content">
+            <h2>The 16 Personality Profiles</h2>
+            <p style="color: var(--text-secondary);">Select a type below to explore detailed breakdowns including cognitive hierarchies.</p>
+            <div class="grid" id="profiles-grid"></div>
+        </div>
+
+        <div id="theory" class="tab-content">
+            <h2>Advanced Cognitive Dynamics</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">True Jungian theory goes deeper than four simple letters. Each type is driven by an elegant stack of four cognitive processing mechanisms.</p>
+            
+            <table class="func-table">
+                <thead>
+                    <tr>
+                        <th>Function Type</th>
+                        <th>Orientation</th>
+                        <th>Core Behavioral Focus</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Ni</strong> (Introverted Intuition)</td><td>Internal</td><td>Spotting conceptual patterns, long-term trends, macro vision.</td></tr>
+                    <tr><td>0<strong>Ne</strong> (Extraverted Intuition)</td><td>External</td><td>Brainstorming possibilities, connections, divergent options.</td></tr>
+                    <tr><td><strong>Si</strong> (Introverted Sensing)</td><td>Internal</td><td>Recalling archives, tradition, reliable history, precise metrics.</td></tr>
+                    <tr><td><strong>Se</strong> (Extraverted Sensing)</td><td>External</td><td>Living fully in the present moment, kinetic physical reaction.</td></tr>
+                    <tr><td><strong>Ti</strong> (Introverted Thinking)</td><td>Internal</td><td>Structuring absolute subjective logic, system mechanics.</td></tr>
+                    <tr><td><strong>Te</strong> (Extraverted Thinking)</td><td>External</td><td>Optimizing workflows, organizing logistics, enforcing efficiency.</td></tr>
+                    <tr><td><strong>Fi</strong> (Introverted Feeling)</td><td>Internal</td><td>Aligning with deep personal values, identity, authenticity.</td></tr>
+                    <tr><td><strong>Fe</strong> (Extraverted Feeling)</td><td>External</td><td>Synchronizing group dynamics, community values, emotional harmony.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div class="modal" id="profile-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+            <span class="badge" id="modal-badge">Group</span>
+            <h1 id="modal-title">Type Name</h1>
+            <h3 id="modal-tagline" style="color: var(--accent); margin-bottom: 1.5rem;"></h3>
+            <div id="modal-body" style="color: var(--text-secondary);"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATABASE ---
+        const profilesData = {
+            INTJ: { title: "The Architect", group: "analysts", tag: "Strategic, hyper-analytical, and deeply visionary planners.", desc: "INTJs live in a world of strategic planning and complex systems. Driven by Introverted Intuition (Ni), they easily connect invisible dots to forecast future trends. Supported by Extraverted Thinking (Te), they build structures to execute their long-term ideas pragmatically. They value logic, competence, and independence, often preferring self-directed missions over collaborative group chatter.<br><br><strong>Cognitive Stack:</strong> Ni - Te - Fi - Se" },
+            INTP: { title: "The Logician", group: "analysts", tag: "Unquenchable thirst for absolute objective system logic.", desc: "INTPs are experimental thinkers who focus entirely on the mechanics of ideas. Driven by Introverted Thinking (Ti), they dissect theories down to their absolute foundational axioms. Using Extraverted Intuition (Ne), they see multi-layered alternatives everywhere. They are highly independent, unconcerned with conventional benchmarks, and easily become fully consumed by theoretical design loops.<br><br><strong>Cognitive Stack:</strong> Ti - Ne - Si - Fe" },
+            ENTJ: { title: "The Commander", group: "analysts", tag: "Decisive leaders who structure macro operational victory.", desc: "ENTJs are bold executives who naturally organize workflows and people into efficient systems. Driven by Extraverted Thinking (Te), they see instantly how to streamline complex systems. Guided by Introverted Intuition (Ni), they construct clear, decades-spanning corporate or creative goals. They challenge mediocrity and value strategic execution above all else.<br><br><strong>Cognitive Stack:</strong> Te - Ni - Se - Fi" },
+            ENTP: { title: "The Debater", group: "analysts", tag: "Quick-witted disruptors fueled by conceptual possibilities.", desc: "ENTPs are ultimate devils-advocates who view the physical world merely as a launchpad for novel ideas. Utilizing Extraverted Intuition (Ne) up front, they constantly map out conceptual transformations. Backed by Introverted Thinking (Ti), they systematically test ideas for logical consistency, laughing off arbitrary protocols or tradition along the way.<br><br><strong>Cognitive Stack:</strong> Ne - Ti - Fe - Si" },
+            INFJ: { title: "The Advocate", group: "diplomats", tag: "Mystical idealists searching for deep human paradigm shifts.", desc: "INFJs are rare, deeply empathetic visionaries. Backed by Ni, they perceive profound conceptual frameworks behind human behavior. Powered by Extraverted Feeling (Fe), they strive for systemic community harmony and aim to elevate others. They possess a complex emotional universe, often struggling to balance cosmic intuition with day-to-day realities.<br><br><strong>Cognitive Stack:</strong> Ni - Fe - Ti - Se" },
+            INFP: { title: "The Mediator", group: "diplomats", tag: "Quietly authentic idealists driven by unshakeable moral cores.", desc: "INFPs are authentic individualists who view reality through an deeply subjective value matrix. Driven by Introverted Feeling (Fi), they defend emotional and ethical purity fiercely. With Extraverted Intuition (Ne), they see infinite imaginative possibilities in literature, art, and human potential, preferring poetic meaning over cold data metrics.<br><br><strong>Cognitive Stack:</strong> Fi - Ne - Si - Te" },
+            ENFJ: { title: "The Protagonist", group: "diplomats", tag: "Charismatic teachers structuring collaborative social growth.", desc: "ENFJs are natural teachers and movement builders. Fueled by Extraverted Feeling (Fe), they instantly adapt to and elevate group emotional dynamics. Guided by Introverted Intuition (Ni), they envision macro goals for human communities, acting as inspirational catalysts who unite people behind profound core values.<br><br><strong>Cognitive Stack:</strong> Fe - Ni - Se - Ti" },
+            ENFP: { title: "The Campaigner", group: "diplomats", tag: "Enthusiastic humanists bridging cosmic ideas with individual truth.", desc: "ENFPs are vibrant, energetic, and highly social innovators. Driven by Extraverted Intuition (Ne), they generate a boundless stream of creative theories and ideas. Anchored by Introverted Feeling (Fi), they need these pursuits to align perfectly with their deep personal values, bringing infectious energy to causes they deem meaningful.<br><br><strong>Cognitive Stack:</strong> Ne - Fi - Fe - Si" },
+            ISTJ: { title: "The Logistician", group: "sentinels", tag: "Methodical, hyper-reliable, and highly organized systemic anchors.", desc: "ISTJs are the structural backbone of society. Driven by Introverted Sensing (Si), they maintain absolute fidelity to historical blueprints, regulations, and proven methodologies. Backed by Extraverted Thinking (Te), they run projects with zero tolerance for chaos, delivering pristine structural efficiency and dependability.<br><br><strong>Cognitive Stack:</strong> Si - Te - Fi - Se" },
+            ISFJ: { title: "The Defender", group: "sentinels", tag: "Warm protectors maintaining absolute community reliability.", desc: "ISFJs combine structural order with quiet, profound empathy. Led by Introverted Sensing (Si), they track concrete needs and tradition meticulously. Powered by Extraverted Feeling (Fe), they channel this accuracy directly into taking care of families, teams, and networks, keeping systems stable behind the scenes.<br><br><strong>Cognitive Stack:</strong> Si - Fe - Ti - Se" },
+            ESTJ: { title: "The Executive", group: "sentinels", tag: "Pragmatic project runners enforcing standard operating protocols.", desc: "ESTJs are natural administrators who focus completely on concrete execution. Using Extraverted Thinking (Te) as their primary driver, they construct processes, optimize systems, and cleanly delegate duties. Rooted in Introverted Sensing (Si), they value clear guidelines, traditional workflows, and unambiguous outcomes.<br><br><strong>Cognitive Stack:</strong> Te - Si - Ne - Fi" },
+            ESFJ: { title: "The Consul", group: "sentinels", tag: "The ultimate community orchestrators valuing absolute harmony.", desc: "ESFJs are social anchors who excel at building vibrant community networks. Driven by Extraverted Feeling (Fe), they naturally manage social expectations and ensure team comfort. Supported by Introverted Sensing (Si), they coordinate events, keep traditions alive, and follow strict operational routines to protect loved ones.<br><br><strong>Cognitive Stack:</strong> Fe - Si - Ne - Ti" },
+            ISTP: { title: "The Virtuoso", group: "explorers", tag: "Tactical engineers diagnosing mechanics on the fly.", desc: "ISTPs are highly analytical realists who love figuring out how things work. Guided by Introverted Thinking (Ti), they dissect physical mechanics and logical systems. Supported by Extraverted Sensing (Se), they interact dynamically with the material world, making them outstanding troubleshooting experts, technicians, and pilots.<br><br><strong>Cognitive Stack:</strong> Ti - Se - Ni - Fe" },
+            ISFP: { title: "The Adventurer", group: "explorers", tag: "Aesthetic individualists exploring physical artistry.", desc: "ISFPs are quiet, expressive artists who experience life through sensory aesthetics and raw personal emotions. Driven by Introverted Feeling (Fi), they live with uncompromised integrity. Backed by Extraverted Sensing (Se), they interact dynamically with their environment, creating sensory masterpieces across art, sports, or style.<br><br><strong>Cognitive Stack:</strong> Fi - Se - Ni - Te" },
+            ESTP: { title: "The Entrepreneur", group: "explorers", tag: "High-octane action takers navigating immediate physical feedback loops.", desc: "ESTPs live on adrenaline, concrete opportunities, and rapid action. Driven by Extraverted Sensing (Se), they absorb sensory realities faster than any other type, navigating fast-moving scenarios effortlessly. Backed by Introverted Thinking (Ti), they make split-second, highly logical adjustments to win.<br><br><strong>Cognitive Stack:</strong> Se - Ti - Fe - Ni" },
+            ESFP: { title: "The Entertainer", group: "explorers", tag: "Vibrant performers bringing raw kinetic energy to the present.", desc: "ESFPs are spontaneous, sensory performers who view life as an open stage. Driven by Extraverted Sensing (Se), they fully engage with external stimuli, people, and real-time events. Supported by Introverted Feeling (Fi), they are genuinely warm, deeply empathetic, and highly expressive individuals who keep spaces energized.<br><br><strong>Cognitive Stack:</strong> Se - Fi - Te - Ni" }
+        };
+
+        const questions = [
+            { text: "You regularly get energized by large group gatherings and interactive brainstorming.", axis: "E" },
+            { text: "You systematically map out a detailed plan before beginning any new project.", axis: "J" },
+            { text: "You prioritize logical efficiency over emotional alignment when analyzing systems.", axis: "T" },
+            { text: "You naturally look past concrete details to focus on macro conceptual patterns.", axis: "N" },
+            { text: "You prefer quiet, solo workspaces over highly collaborative, busy environments.", axis: "I" },
+            { text: "You feel most creative when adapting spontaneously to fluid, changing circumstances.", axis: "P" },
+            { text: "You base decisions primarily on empathy, personal values, and group harmony.", axis: "F" },
+            { text: "You prefer working with concrete facts and metrics rather than speculative theories.", axis: "S" },
+            { text: "You often find yourself initiating conversations with strangers at social events.", axis: "E" },
+            { text: "You feel deeply satisfied when your physical environment is highly organized and structured.", axis: "J" },
+            { text: "An objective critique of your work matters far more to you than gentle praise.", axis: "T" },
+            { text: "You spend a great deal of time exploring imaginative, hypothetical futures.", axis: "N" },
+            { text: "You need time to recharge alone after managing intense interpersonal interactions.", axis: "I" },
+            { text: "You view routines and schedules as limiting rather than helpful frameworks.", axis: "P" },
+            { text: "You can easily feel the shifting emotional energy in a room full of people.", axis: "F" },
+            { text: "You anchor your ideas heavily in historical data, archives, and past experiences.", axis: "S" },
+            { text: "You speak your mind quickly, processing your thoughts out loud as you talk.", axis: "E" },
+            { text: "Deadlines should be treated as absolute commitments rather than flexible targets.", axis: "J" },
+            { text: "You default to evaluating situations with cool logic rather than emotional context.", axis: "T" },
+            { text: "You are constantly looking for symbolic meanings behind day-to-day events.", axis: "N" }
+        ];
+
+        // --- STATE MANAGEMENT ---
+        let currentQuestionIdx = 0;
+        let scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+
+        // --- NAVIGATION ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            document.documentElement.setAttribute('data-theme', currentTheme === 'light' ? 'dark' : 'light');
+        }
+
+        // --- QUIZ ENGINE ---
+        function renderQuestion() {
+            if (currentQuestionIdx < questions.length) {
+                document.getElementById('progress').style.width = `${(currentQuestionIdx / questions.length) * 100}%`;
+                document.getElementById('question-num').innerText = `Question ${currentQuestionIdx + 1} of ${questions.length}`;
+                document.getElementById('question-text').innerText = questions[currentQuestionIdx].text;
+            } else {
+                calculateResults();
+            }
+        }
+
+        function handleAnswer(weight) {
+            const currentQ = questions[currentQuestionIdx];
+            if (weight > 0) {
+                scores[currentQ.axis] += weight;
+            } else {
+                // Find opposite axis
+                const opposite = getOppositeAxis(currentQ.axis);
+                scores[opposite] += Math.abs(weight);
+            }
+            currentQuestionIdx++;
+            renderQuestion();
+        }
+
+        function getOppositeAxis(axis) {
+            const pairs = { E: 'I', I: 'E', N: 'S', S: 'N', T: 'F', F: 'T', J: 'P', P: 'J' };
+            return pairs[axis];
+        }
+
+        function calculateResults() {
+            document.getElementById('progress').style.width = '100%';
+            let type = "";
+            type += scores.E >= scores.I ? "E" : "I";
+            type += scores.N >= scores.S ? "N" : "S";
+            type += scores.T >= scores.F ? "T" : "F";
+            type += scores.J >= scores.P ? "J" : "P";
+
+            document.getElementById('question-container').style.display = 'none';
+            const resBox = document.getElementById('results-box');
+            resBox.style.display = 'block';
+            
+            document.getElementById('type-output').innerText = type;
+            document.getElementById('type-title').innerText = profilesData[type].title;
+            document.getElementById('type-summary').innerHTML = profilesData[type].tag + "<br><br>" + profilesData[type].desc;
+        }
+
+        function resetQuiz() {
+            currentQuestionIdx = 0;
+            scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+            document.getElementById('question-container').style.display = 'block';
+            document.getElementById('results-box').style.display = 'none';
+            renderQuestion();
+        }
+
+        // --- INTERACTIVE PROFILES GRID ---
+        function renderProfilesGrid() {
+            const grid = document.getElementById('profiles-grid');
+            grid.innerHTML = "";
+            for (const [key, val] of Object.entries(profilesData)) {
+                const card = document.createElement('div');
+                card.className = `card`;
+                card.onclick = () => openModal(key);
+                card.innerHTML = `
+                    <span class="badge ${val.group}">${val.group.toUpperCase()}</span>
+                    <h3 style="font-size: 1.5rem; font-weight:800;">${key}</h3>
+                    <h4 style="color: var(--accent); margin-bottom: 0.5rem;">${val.title}</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">${val.tag}</p>
+                `;
+                grid.appendChild(card);
+            }
+        }
+
+        // --- MODAL ENGINE ---
+        function openModal(typeKey) {
+            const data = profilesData[typeKey];
+            document.getElementById('modal-badge').className = `badge ${data.group}`;
+            document.getElementById('modal-badge').innerText = data.group.toUpperCase();
+            document.getElementById('modal-title').innerText = `${typeKey} - ${data.title}`;
+            document.getElementById('modal-tagline').innerText = data.tag;
+            document.getElementById('modal-body').innerHTML = data.desc;
+            document.getElementById('profile-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('profile-modal').style.display = 'none';
+        }
+
+        // Close modal when user clicks outside the content box
+        window.onclick = function(event) {
+            const modal = document.getElementById('profile-modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+
+        // --- INIT ---
+        document.documentElement.setAttribute('data-theme', 'dark');
+        renderQuestion();
+        renderProfilesGrid();
+    </script>
+</body>
+</html>
